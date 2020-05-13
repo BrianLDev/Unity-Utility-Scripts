@@ -70,9 +70,9 @@ namespace UnityUtilities {
         public bool invertY = false;
 
         [Tooltip("Changes the awkward Unity controls fo Q=down and E=up to C=down and R=up.  Default=checked")]
-        public bool useAlternateControls = true;
+        public bool useAlternateControls = false;
         [Tooltip("If checked, camera pans along with mouse movement. If unchecked, need to right click to pan camera")]
-        public bool panOnMouseMovement = true;
+        public bool panOnMouseMovement = false;
         #endregion
 
         #region SimpleCameraControllerBL Methods / Functions
