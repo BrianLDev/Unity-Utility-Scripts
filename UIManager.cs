@@ -32,14 +32,22 @@ namespace UnityUtilities {
         // We need to update the values of some UI elements so here are
         // their remembered references after being queried from the cloned
         // UXML.
-        private Label m_SpeedLabel;
-        private Label m_KillsLabel;
-        private Label m_ShotsLabel;
-        private Label m_AccuracyLabel;
+        // private Label m_SpeedLabel;
+        // private Label m_KillsLabel;
+        // private Label m_ShotsLabel;
+        // private Label m_AccuracyLabel;
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         // MonoBehaviour States
+
+        protected new void Awake() {
+            base.Awake();
+            // make sure all Panel Renderers are set to off first.  Otherwise the Bind methods below will not run
+            m_MainMenuScreen.enabled = false;
+            m_GameScreen.enabled = false;
+            m_EndScreen.enabled = false;
+        }
 
         // OnEnable
         // Register our postUxmlReload callbacks to be notified if and when
@@ -53,13 +61,11 @@ namespace UnityUtilities {
             m_EndScreen.postUxmlReload = BindEndScreen;
 
             m_TrackedAssetsForLiveUpdates = new List<Object>();
-
         }
 
         // Start
         // Just go to main menu.
-        private void Start()
-        {
+        private void Start() {
     #if !UNITY_EDITOR
             if (Screen.fullScreen)
                 Screen.fullScreen = false;
@@ -69,9 +75,8 @@ namespace UnityUtilities {
         }
 
         // Update
-        // Update UI Labels with data from the game. (also run some minimal game logic)
         private void Update() {
-            
+            // add any logic to update in game stats here
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,25 +85,21 @@ namespace UnityUtilities {
         // Try to find specific elements by name in the main menu screen and
         // bind them to callbacks and data. Not finding an element is a valid
         // state.
-        private IEnumerable<Object> BindMainMenuScreen()
-        {
+        private IEnumerable<Object> BindMainMenuScreen() {
             var root = m_MainMenuScreen.visualTree;
 
             var startButton = root.Q<Button>("start-button");
-            if (startButton != null)
-            {
-                startButton.clickable.clicked += () =>
-                {
-                    StartRound();
+            if (startButton != null) {
+                startButton.clickable.clicked += () => { 
+                    StartGame(); 
                 };
             }
 
             var exitButton = root.Q<Button>("exit-button");
-            if (exitButton != null)
-            {
-                exitButton.clickable.clicked += () =>
-                {
-                    Application.Quit();
+            if (exitButton != null) {
+                exitButton.clickable.clicked += () => { 
+                    Debug.Log("Quitting Game");
+                    Application.Quit(); 
                 };
             }
 
@@ -108,54 +109,59 @@ namespace UnityUtilities {
         // Try to find specific elements by name in the game screen and
         // bind them to callbacks and data. Not finding an element is a valid
         // state.
-        private IEnumerable<Object> BindGameScreen()
-        {
+        private IEnumerable<Object> BindGameScreen() {
             var root = m_GameScreen.visualTree;
 
             // Stats
-            m_SpeedLabel = root.Q<Label>("_speed");
-            m_KillsLabel = root.Q<Label>("_kills");
-            m_ShotsLabel = root.Q<Label>("_shots");
-            m_AccuracyLabel = root.Q<Label>("_accuracy");
+            // m_SpeedLabel = root.Q<Label>("_speed");
+            // m_KillsLabel = root.Q<Label>("_kills");
+            // m_ShotsLabel = root.Q<Label>("_shots");
+            // m_AccuracyLabel = root.Q<Label>("_accuracy");
 
             // Buttons
-            var increaseSpeedButton = root.Q<Button>("increase-speed");
-            if (increaseSpeedButton != null)
-            {
-                increaseSpeedButton.clickable.clicked += () =>
-                {
-                    // m_Player1Movement.m_Speed += 1;
+            var optionsButton = root.Q<Button>("options-button");
+            if (optionsButton != null) {
+                optionsButton.clickable.clicked += () => {
+                    GoToOptionsMenu();
                 };
             }
-            var backToMenuButton = root.Q<Button>("back-to-menu");
-            if (backToMenuButton != null)
-            {
-                backToMenuButton.clickable.clicked += () =>
-                {
-                    SceneManager.LoadScene(0);
+            var backToMenuButton = root.Q<Button>("back-to-menu-button");
+            if (backToMenuButton != null) {
+                backToMenuButton.clickable.clicked += () => {
+                    GoToMainMenu();
                 };
             }
-            var randomExplosionButton = root.Q<Button>("random-explosion");
-            if (randomExplosionButton != null)
-            {
-                Debug.Log("EXPLODE!");
+            var gameOverButton = root.Q<Button>("game-over-button");
+            if (gameOverButton != null) {
+                gameOverButton.clickable.clicked += () => {
+                    GameOver();
+                };
             }
+            // var increaseSpeedButton = root.Q<Button>("increase-speed");
+            // if (increaseSpeedButton != null) {
+            //     increaseSpeedButton.clickable.clicked += () => {
+            //         // m_Player1Movement.m_Speed += 1;
+            //     };
+            // }
 
-            m_TrackedAssetsForLiveUpdates.Clear();
-            return m_TrackedAssetsForLiveUpdates;
+            // var randomExplosionButton = root.Q<Button>("random-explosion");
+            // if (randomExplosionButton != null) {
+            //     Debug.Log("EXPLODE!");
+            // }
+
+            // m_TrackedAssetsForLiveUpdates.Clear();
+            // return m_TrackedAssetsForLiveUpdates;
+
+            return null;
         }
 
         // Try to find specific elements by name in the end screen and
         // bind them to callbacks and data. Not finding an element is a valid
         // state.
-        private IEnumerable<Object> BindEndScreen()
-        {
+        private IEnumerable<Object> BindEndScreen() {
             var root = m_EndScreen.visualTree;
 
-            root.Q<Button>("back-to-menu-button").clickable.clicked += () =>
-            {
-                SceneManager.LoadScene(0);
-            };
+            root.Q<Button>("back-to-menu-button").clickable.clicked += () => { GoToMainMenu(); };
 
             return null;
         }
@@ -163,25 +169,23 @@ namespace UnityUtilities {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         // Screen Transition Logic
-
         void SetScreenEnableState(PanelRenderer screen, bool state)
         {
-            if (state)
-            {
+            if (state) {
                 screen.visualTree.style.display = DisplayStyle.Flex;
                 screen.enabled = true;
                 screen.gameObject.GetComponent<UIElementsEventSystem>().enabled = true;
             }
-            else
-            {
+            else {
                 screen.visualTree.style.display = DisplayStyle.None;
                 screen.enabled = false;
                 screen.gameObject.GetComponent<UIElementsEventSystem>().enabled = false;
             }
         }
 
-        IEnumerator TransitionScreens(PanelRenderer from, PanelRenderer to)
-        {
+        IEnumerator TransitionScreens(PanelRenderer from, PanelRenderer to) {
+            Debug.Log("Transitioning " + from.name + " to " + to.name);
+
             from.visualTree.style.display = DisplayStyle.None;
             from.gameObject.GetComponent<UIElementsEventSystem>().enabled = false;
 
@@ -211,20 +215,23 @@ namespace UnityUtilities {
         }
 
 
-        private void GoToMainMenu()
-        {
+        private void GoToMainMenu() {
+            Debug.Log("Going to main menu");
             SetScreenEnableState(m_MainMenuScreen, true);
             SetScreenEnableState(m_GameScreen, false);
             SetScreenEnableState(m_EndScreen, false);
         }
 
-        private void StartRound()
-        {
+        private void StartGame() {
             StartCoroutine(TransitionScreens(m_MainMenuScreen, m_GameScreen));
         }
 
-        private void EndRound()
-        {
+        private void GoToOptionsMenu() {
+            Debug.Log("This would load an options menu...if one existed.");
+            //TODO: Add this
+        }
+
+        private void GameOver() {
             SetScreenEnableState(m_MainMenuScreen, false);
             SetScreenEnableState(m_GameScreen, false);
             SetScreenEnableState(m_EndScreen, true);

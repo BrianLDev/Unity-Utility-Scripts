@@ -12,7 +12,7 @@ namespace UnityUtilities {
     
     public class SingletonMono<T> : MonoBehaviour  where T : MonoBehaviour{        
         public static T Instance { get; private set; }
-        [SerializeField] private bool _singletonDontDestroyOnLoad = true;
+        [SerializeField] private bool _parentDontDestroyOnLoad = true;
         
         protected void Awake() {
             if (Instance != null) {
@@ -23,7 +23,7 @@ namespace UnityUtilities {
                 Instance = (T)FindObjectOfType(typeof(T) );
             }
 
-            if (_singletonDontDestroyOnLoad) {
+            if (_parentDontDestroyOnLoad) {
                 DontDestroyOnLoad(this.transform.root.gameObject);  // Makes the root parent don't destroy on load. Required by Unity
             }
         }
