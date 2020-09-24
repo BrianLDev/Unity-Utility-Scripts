@@ -1,12 +1,14 @@
 ﻿/*
-UNITY UTILITY SCRIPTS
-Simple Camera Controller-BL
+ECX UTILITY SCRIPTS
+Simple Camera Controller (Customized from Unity default by Ecx)
+Last updated: May 13, 2020
 */
 
 using UnityEngine;
+using EcxUtilities;
 
-namespace UnityUtilities {
-    public class SimpleCameraControllerBL : MonoBehaviour {
+namespace EcxUtilities {
+    public class SimpleCameraControllerEcx : MonoBehaviour {
         class CameraState {
             public float yaw;
             public float pitch;
