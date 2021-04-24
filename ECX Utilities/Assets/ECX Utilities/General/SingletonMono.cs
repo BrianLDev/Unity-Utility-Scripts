@@ -1,11 +1,10 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Singleton MonoBehaviour
-Last updated: September 24, 2020
+Last updated: March 25, 2021
 */
 
 using UnityEngine;
-using EcxUtilities;
 
 namespace EcxUtilities {
     /// <summary>
@@ -13,28 +12,31 @@ namespace EcxUtilities {
     /// e.g. GameManagers or AudioPlayers
     /// Named "SingletonMono" to differentiate from the future DOTS/ECS version which won't use MonoBehaviour
     /// Declaration syntax:     
-    ///     public class UIManager : SingletonMono<UIManager>
+    ///     public class AudioManager : SingletonMono<AudioManager>
     /// </summary>
     public class SingletonMono<T> : MonoBehaviour  where T : MonoBehaviour{   
         
         public static bool organizeManagerGameObj = true;
         public static bool parentDontDestroyOnLoad = true;
+        public static bool verboseDebugLog = false;
         private static T m_instance;
         public static T Instance { 
             get {
                 // 1) On first access, create the singleton
                 if (m_instance == null) {
                     // Find the object and assign it to the private singleton variable (only done once)
-                    m_instance = (T)FindObjectOfType(typeof(T) );  
-                    Debug.Log("Initializing singleton of type " + typeof(T).ToString() + ".  Intance = " + m_instance);
+                    m_instance = (T)FindObjectOfType(typeof(T) );
+                    if (verboseDebugLog)
+                        Debug.Log("Initializing singleton of type " + typeof(T).ToString() + ".  Intance = " + m_instance);
 
                     // Make sure that there aren't multiple singletons 
                     if (FindObjectsOfType(typeof(T)).Length > 1) {  
                         Debug.LogError("Error!  There should only be 1 intance of " + typeof(T).ToString() + " singleton.  Check your scene and remove any duplicates.");
                     }
                     // If somehow the <T> object was not found, create a new one
-                    if (m_instance == null) {   
-                        Debug.Log("SingletonMono couldn't find object of type " + typeof(T).ToString()  + ". Creating a new one.");
+                    if (m_instance == null) {
+                        if (verboseDebugLog)
+                            Debug.Log("SingletonMono couldn't find object of type " + typeof(T).ToString()  + ". Creating a new one.");
                         GameObject newGameObj = new GameObject();
                         newGameObj.AddComponent<T>();
                         m_instance = newGameObj.GetComponent<T>();
@@ -43,11 +45,13 @@ namespace EcxUtilities {
                     if (organizeManagerGameObj) {
                         GameObject parent = GameObject.Find("Managers");
                         if (!parent) {
-                            Debug.Log("Creating new parent manager");
+                            if (verboseDebugLog)
+                                Debug.Log("Creating new parent manager");
                             parent = new GameObject("Managers");
                         }
                         m_instance.gameObject.transform.parent = parent.transform;
-                        Debug.Log("Parent of singleton is " + m_instance.gameObject.transform.parent);
+                        if (verboseDebugLog)
+                            Debug.Log("Parent of singleton is " + m_instance.gameObject.transform.parent);
                     }
                     // Set the root parent to Don't destroy on load if the option is checked
                     if (parentDontDestroyOnLoad)
@@ -60,8 +64,7 @@ namespace EcxUtilities {
                     return m_instance;
                 }
                 // 2) In all future cases where the singleton exists, simply return it.
-                else { 
-                    Debug.Log("Singleton already created, returning instance");
+                else {
                     return m_instance;
                 }
             } 
