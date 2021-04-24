@@ -5,33 +5,9 @@ using UnityEngine.SceneManagement;
 using EcxUtilities;
 
 public class SfxManager : SingletonMono<SfxManager> {
-    public AudioClip[] playerFootsteps;
-    public AudioClip playerSwordSwing;
-    public AudioClip playerDeath;
-    public AudioClip playerJump1;
-    public AudioClip playerJump2;
-    public AudioClip[] skeletonFootsteps;
-    public AudioClip skeletonSwordHit1;
-    public AudioClip skeletonSwordHit2;
-    public AudioClip skeletonDeath;
-    public AudioClip[] minotaurFootsteps;
-    public AudioClip minotaurAxeSwing;
-    public AudioClip minotaurMeteorSummon;
-    public AudioClip minotaurMeteorImpact;
-    public AudioClip minotaurDeath;
+    // ADD SFX CLIPS HERE, THEN DRAG/DROP THEM IN THE UNITY EDITOR
+    public AudioClip sound1;
 
-    public void PlayRandomPlayerFootstep() {
-        int clipNum = Random.Range(0, playerFootsteps.Length-1);
-        AudioManager.Instance.PlayClip(playerFootsteps[clipNum], AudioCategory.Sfx);
-    }
-
-    public void PlayRandomSkeletonFootstep() {
-        int clipNum = Random.Range(0, skeletonFootsteps.Length-1);
-        AudioManager.Instance.PlayClip(skeletonFootsteps[clipNum], AudioCategory.Sfx);
-    }
-
-    public void PlayRandomMinotaurFootstep() {
-        int clipNum = Random.Range(0, minotaurFootsteps.Length-1);
-        AudioManager.Instance.PlayClip(minotaurFootsteps[clipNum], AudioCategory.Sfx);
-    }
+    // ADD ANY PUBLIC METHODS HERE TO PLAY SPECIFIC SFX
+    // OR ALTERNATIVELY JUST USE THE AUDIOMANAGER TO PLAY A CLIP AND LOAD IT USING THIS INSTANCE
 }

@@ -5,41 +5,22 @@ using UnityEngine.SceneManagement;
 using EcxUtilities;
 
 public class MusicManager : SingletonMono<MusicManager> {
-    public AudioClip menuAndCredits;
-    public AudioClip combatLoop;
-    public AudioClip exploreLoop;
-    public AudioClip bossMinotaur;
-    public AudioClip bossVampire;
-    public AudioClip bossWitch;
-    public AudioClip deathStinger;
-    public AudioClip beginBossBattle;
-    public AudioClip victoryStinger;
+    // ADD MUSIC CLIPS HERE, THEN DRAG/DROP THEM IN THE UNITY EDITOR
+    public AudioClip mainMenuMusic;
+    public AudioClip gameMusic;
+    public AudioClip gameOverMusic;
 
     private void Awake() {
         SceneManager.sceneLoaded += OnSceneLoaded;  // subscribe to OnSceneLoaded event to play music for that scene
     }
 
-    public void PlayDeathStinger() {
-        AudioManager.Instance.PlayMusic(deathStinger);
-    }
-
-    public void PlayVictoryStinger() {
-        AudioManager.Instance.PlayMusic(victoryStinger);
-    }
-
-    public void PlayBeginBossBattle() {
-        AudioManager.Instance.PlayMusic(beginBossBattle);
-    }
-    
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.buildIndex == 0)      // Main Menu
-            AudioManager.Instance.PlayMusic(bossVampire);
-        else if (scene.buildIndex == 1) // Minotaur Level
-            AudioManager.Instance.PlayMusic(combatLoop);
-        else if (scene.buildIndex == 2) // Minotaur Mansion
-            AudioManager.Instance.PlayMusic(bossMinotaur);
-        else if (scene.buildIndex == 3) // Credits
-            AudioManager.Instance.PlayMusic(bossWitch);
+            AudioManager.Instance.PlayMusic(mainMenuMusic);
+        else if (scene.buildIndex == 1) // Game
+            AudioManager.Instance.PlayMusic(gameMusic);
+        else if (scene.buildIndex == 2) // Game Over
+            AudioManager.Instance.PlayMusic(gameOverMusic);
     }
 
     private void OnDestroy() {
