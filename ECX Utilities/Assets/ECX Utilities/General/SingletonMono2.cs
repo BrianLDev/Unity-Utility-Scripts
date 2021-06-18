@@ -15,7 +15,7 @@ namespace EcxUtilities {
     /// Declaration syntax:     
     ///     public class AudioManager : SingletonMono<AudioManager>
     /// </summary>
-    public class SingletonMono<T> : MonoBehaviour  where T : MonoBehaviour{   
+    public class SingletonMono2<T> : MonoBehaviour  where T : MonoBehaviour{   
         
         public static bool organizeManagerGameObj = true;
         public static bool parentDontDestroyOnLoad = true;

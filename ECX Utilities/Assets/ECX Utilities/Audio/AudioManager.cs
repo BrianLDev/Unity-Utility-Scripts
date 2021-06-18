@@ -1,7 +1,7 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Audio Manager (Singleton)
-Last updated: March 10, 2021
+Last updated: June 18, 2021
 */
 
 using System.Collections;
@@ -11,14 +11,29 @@ using UnityEditor;
 using UnityEngine.SceneManagement;
 
 namespace EcxUtilities {
-    public enum AudioCategory { Music, Sfx, UI}
+    public enum AudioCategory { Music, Sfx, UI }
 
     public class AudioManager : SingletonMono<AudioManager> {
 
+        [SerializeField][Range(0, 3)] private static float pitchRangeUI = 0.1f;
+        public static float PitchRangeUI => pitchRangeUI;
+        [SerializeField] private MusicManager musicManager;
+        public MusicManager MusicManager => musicManager;
+        [SerializeField] private SfxManager sfxManager;
+        public SfxManager SfxManager => sfxManager;
+        [SerializeField] private UISfxManager uISfxManager;
+        public UISfxManager UISfxManager => uISfxManager;
         [SerializeField] private AudioSource audioSourceMusic;
+        public AudioSource AudioSourceMusic => audioSourceMusic;
         [SerializeField] private AudioSource audioSourceSfx;
+        public AudioSource AudioSourceSfx => audioSourceSfx;
         [SerializeField] private AudioSource audioSourceUI;
+        public AudioSource AudioSourceUI => audioSourceUI;
+        [SerializeField] private AudioSourcePool audioSourceSfxPool;
+        public AudioSourcePool AudioSourcePool => AudioSourcePool;
+
         private bool isMusicPaused = false;
+        // TODO: CREATE "LISTENERS" THAT RECALC MUSIC VOLUME WHEN THE SLIDERS BELOW ARE CHANGED IN THE UNITY EDITOR
         [SerializeField][Range(0f, 1f)]
         private float volumeMaster = 1f;
         public float VolumeMaster => volumeMaster;
@@ -34,20 +49,26 @@ namespace EcxUtilities {
 
 
         private void Awake() {
-            if (!audioSourceMusic)
-                Debug.LogError("Error: Missing Audio Source for Music");
-            if (!audioSourceSfx)
-                Debug.LogError("Error: Missing Audio Source for Sfx");
-            if (!audioSourceUI)
-                Debug.LogError("Error: Missing Audio Source for UI");
-            // TODO: auto-create audio sources as child game objects if they are not assigned in the Unity Editor
-            SceneManager.sceneLoaded += OnSceneLoaded;  // subscribe to OnSceneLoaded event to play music for that scene
+            // destroy any duplicate AudioManagers
+            AudioManager[] audioManagers = FindObjectsOfType<AudioManager>();
+            if (audioManagers.Length > 1) {
+                for (int i=1; i<audioManagers.Length; i++)
+                Destroy(audioManagers[i].gameObject);
+            }
+            if (!musicManager)
+                Debug.LogError("Error: Missing Music Manager");
+            if (!sfxManager)
+                Debug.LogError("Error: Missing SFX Manager");
+            if (!uISfxManager)
+                Debug.LogError("Error: Missing UI SFX Manager");
+            if (!audioSourceSfxPool)
+                Debug.LogError("Error: Missing Audio Source SFX Pool");
+            // subscribe to OnSceneLoaded event to play music for that scene
+            SceneManager.sceneLoaded += OnSceneLoaded;  
         }
 
         private void Start() {
-            audioSourceMusic.volume = volumeMusic * volumeMaster;
-            audioSourceSfx.volume = volumeSfx * volumeMaster;
-            audioSourceUI.volume = volumeUI * volumeMaster;
+            CalibrateAdjustedVolumes();
         }
 
         /// <summary>
@@ -63,6 +84,7 @@ namespace EcxUtilities {
             if (audioClip) {
                 float adjVolume = CalcAdjustedVolume(ac, volume);
                 // start with simplest and fastest option
+                audioSourceSfx = audioSourceSfxPool.GetNextAudioSource();
                 if (audioSourceSfx.pitch==pitch || !audioSourceSfx.isPlaying) { 
                     audioSourceSfx.pitch = pitch;
                     audioSourceSfx.PlayOneShot(audioClip, adjVolume);
@@ -113,6 +135,7 @@ namespace EcxUtilities {
             if (audioClip) {
                 float adjVolume = CalcAdjustedVolume(ac, volume);
                 // start with simplest and fastest option
+                audioSourceSfx = audioSourceSfxPool.GetNextAudioSource();
                 if (!audioSourceSfx.isPlaying) {
                     audioSourceSfx.clip = audioClip;
                     audioSourceSfx.volume = adjVolume;
@@ -146,6 +169,7 @@ namespace EcxUtilities {
             if (audioClip) {
                 float adjVolume = CalcAdjustedVolume(ac, volume);
                 // start with simplest and fastest option
+                audioSourceSfx = audioSourceSfxPool.GetNextAudioSource();
                 if (!audioSourceSfx.isPlaying) {
                     audioSourceSfx.clip = audioClip;
                     audioSourceSfx.volume = adjVolume;
@@ -224,20 +248,24 @@ namespace EcxUtilities {
 
 
         /// <summary>
-        /// Loads a music track to the music AudioSource and plays it. (volume and pitch are optional)
+        /// Loads a music track to the music AudioSource and plays it. (delay, volume, and pitch are optional)
         /// </summary>
         /// <param name="music"></param>
+        /// <param name="delay"></param>
         /// <param name="volume"></param>
         /// <param name="pitch"></param>
-        public void PlayMusic(AudioClip music, float volume=1, float pitch=1) {
+        public void PlayMusic(AudioClip music, float delay=0, float volume=1, float pitch=1) {
             if(music!=null) {
                 volume = CalcAdjustedVolume(AudioCategory.Music, volume);
                 audioSourceMusic.clip = music;
                 audioSourceMusic.loop = true;
-                audioSourceMusic.Play();
+                if (delay>0)
+                    audioSourceMusic.PlayDelayed(delay);
+                else
+                    audioSourceMusic.Play();
             }
             else {
-                Debug.LogError("Missing music: " + music);
+                Debug.LogError("Missing music: " + music.name);
             }
         }
 
@@ -263,12 +291,13 @@ namespace EcxUtilities {
             return isMusicPaused;
         }
 
-
-
-        public void ResetAdjustedVolumes() {
-            audioSourceMusic.volume = volumeMaster * volumeMusic;
-            audioSourceSfx.volume = volumeMaster * volumeSfx;
-            audioSourceUI.volume = volumeMaster * volumeUI;
+        public void CalibrateAdjustedVolumes() {
+            if (audioSourceMusic)
+                audioSourceMusic.volume = volumeMaster * volumeMusic;
+            if (audioSourceSfx)
+                audioSourceSfx.volume = volumeMaster * volumeSfx;
+            if (audioSourceUI)
+                audioSourceUI.volume = volumeMaster * volumeUI;
         }
 
         /// <summary>
@@ -289,35 +318,19 @@ namespace EcxUtilities {
         }
 
 
-        /// <summary>
-        /// Utility script to load in AudioClipLists. (Optional: not required for all audio setups)
-        /// </summary>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
-        public static AudioClipList LoadAudioClipList(string assetName) {
-            #if UNITY_EDITOR
-                string[] guids = AssetDatabase.FindAssets(assetName);
-                AudioClipList acl = (AudioClipList)AudioClipList.CreateInstance(typeof(AudioClipList));
-                // grabbing the first guid. Make sure the provided name is an exact match.
-
-                acl = (AudioClipList)AssetDatabase.LoadAssetAtPath(assetPath: AssetDatabase.GUIDToAssetPath(guids[0]), typeof(AudioClipList));   
-                if(!acl) { Debug.LogError("Error: Couldn't find AudioClipList: " + assetName + ". Check to ensure file exists."); }
-                return acl;
-            #else
-                // TODO: add loading code for outside of unity editor.  AssetDatabase only works in editor mode.
-                return null;
-            #endif
-        }
-
+        // TODO: FIGURE OUT A BETTER WAY TO CONNECT MUSIC WITH RELATED SCENE.  BUILD INDEXES COULD CHANGE.
         /// <summary>
         /// Plays a music track as soon as a scene is finished loading.
         /// use this format in any script (e.g. MusicManager) to play a music track any as soon as a scene is loaded
         /// Note: need to subscribe in Awake (SceneManager.sceneLoaded += OnSceneLoaded;) unsubscribe in OnDestroy (SceneManager.sceneLoaded -= OnSceneLoaded;)
         /// </summary>
-        /// <param name="scene"></param>
-        /// <param name="mode"></param>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-            // ADD CODE HERE FOR PLAYING VARIOUS TRACKS FOR EACH SCENE
+            if (scene.buildIndex == 0)      // Main Menu
+                AudioManager.Instance.PlayMusic(musicManager.mainMenuMusic, 0.2f);
+            else if (scene.buildIndex == 1) // Game
+                AudioManager.Instance.PlayMusic(musicManager.gameMusic, 0.2f);
+            else if (scene.buildIndex == 2) // Game Over
+                AudioManager.Instance.PlayMusic(musicManager.gameOverMusic, 0.2f);
         }
 
         private void OnDestroy() {
