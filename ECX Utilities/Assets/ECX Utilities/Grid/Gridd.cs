@@ -1,7 +1,7 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Gridd (uses double d's to avoid name conflict with UnityEngine.grid)
-Last updated: Jan 17, 2022
+Last updated: Jan 21, 2022
 */
 
 using UnityEngine;
