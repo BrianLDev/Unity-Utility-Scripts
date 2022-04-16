@@ -97,7 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 917d29eef4e594e4eb3391f285c9f08e,
+    type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
@@ -132,7 +133,7 @@ GameObject:
   - component: {fileID: 92088810}
   - component: {fileID: 92088809}
   m_Layer: 0
-  m_Name: GridTest
+  m_Name: GriddTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,6 +151,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ad8f0959b8c4a3b923bf2ace294896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  width: 10
+  height: 10
+  cellsize: 1
+  minValue: 0
+  maxValue: 255
 --- !u!4 &92088810
 Transform:
   m_ObjectHideFlags: 0

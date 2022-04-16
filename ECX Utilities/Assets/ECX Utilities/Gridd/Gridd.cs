@@ -1,14 +1,21 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Gridd (uses double d's to avoid name conflict with UnityEngine.grid)
-Last updated: Jan 21, 2022
+Last updated: Jan 26, 2022
 */
 
 using UnityEngine;
 using TMPro;
 
 namespace EcxUtilities {
-    public class Gridd {    // (uses double d's to avoid name conflict with UnityEngine.grid)
+    /// <summary>
+    /// A versatile and efficient 2D grid system for Unity
+    /// Note: uses double d's to avoid name conflict with UnityEngine.grid
+    /// </summary>
+    public class Gridd {
+        public Grid grid;
+        public int maxValue = int.MaxValue;     // change these if restricted range needed for use case
+        public int minValue = int.MinValue;     // change these if restricted range needed for use case
         private static Transform textContainerTfm;
         private int width;
         private int height;
@@ -17,10 +24,12 @@ namespace EcxUtilities {
         private TextMeshPro[,] gridTextArray;   // to display values stored in gridArray
 
         // Constructor
-        public Gridd(int width, int height, float cellSize = 1f, bool displayValues = true, bool displayGridLines = true) {
+        public Gridd(int width = 5, int height = 5, float cellSize = 1f, int minVal = int.MinValue, int maxVal = int.MaxValue, bool displayValues = true, bool displayGridLines = true) {
             this.width = width;
             this.height = height;
             this.cellSize = cellSize;
+            minValue = minVal;
+            maxValue = maxVal;
             gridArray = new int[width, height];
             // Debug text
             gridTextArray = new TextMeshPro[width, height];
@@ -49,6 +58,7 @@ namespace EcxUtilities {
         }
 
         public void SetValue(int x, int y, int value) {
+            value = Mathf.Clamp(value, minValue, maxValue);
             gridArray[x, y] = value;
             gridTextArray[x,y].text = value.ToString();
         }
@@ -89,5 +99,6 @@ namespace EcxUtilities {
             Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
             Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
         }
+
     }
 }

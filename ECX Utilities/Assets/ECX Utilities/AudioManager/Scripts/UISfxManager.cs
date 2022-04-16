@@ -1,7 +1,7 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 UI Sfx Manager (Scriptable Object)
-Last updated: June 18, 2021
+Last updated: Apr 16, 2022
 */
 
 using System.Collections;
@@ -14,7 +14,7 @@ namespace EcxUtilities {
     /// This UI SfxManager is primarily used as a readily accessible UI SFX AudioClip storage.
     /// Other scripts can access audioclips as needed using UISfxManager.xxx
     /// </summary>
-    [CreateAssetMenu(fileName = "UISfxManager-X", menuName = "ECX Utilities/UISfxManager", order = 1)] 
+    [CreateAssetMenu(fileName = "UISfxManager", menuName = "ECX Utilities/UISfxManager", order = 1)] 
     public class UISfxManager : ScriptableObject {
 
         [Header("Standard UI SFX")]

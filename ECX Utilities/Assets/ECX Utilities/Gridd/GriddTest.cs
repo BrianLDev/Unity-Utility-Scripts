@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using EcxUtilities;
 
-public class GridTest : MonoBehaviour {
+public class GriddTest : MonoBehaviour {
     Gridd grid;
     int width = 10;
     int height = 10;
     float cellsize = 1f;
+    int minValue = 0;
+    int maxValue = 255;
 
     private void Start() {
         grid = new Gridd(width, height, cellsize);
+        grid.minValue = minValue;
+        grid.maxValue = maxValue;
         grid.SetValue(2, 1, 13);
     }
 

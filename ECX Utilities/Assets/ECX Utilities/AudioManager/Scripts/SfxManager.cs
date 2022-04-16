@@ -1,7 +1,7 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Sfx Manager (Scriptable Object)
-Last updated: June 18, 2021
+Last updated: Apr 16, 2022
 */
 
 using System.Collections;
@@ -13,13 +13,10 @@ namespace EcxUtilities {
     /// This SfxManager is primarily used as a readily accessible SFX AudioClip storage.
     /// Other scripts can access audioclips as needed using SfxManager.xxx
     /// </summary>
-    [CreateAssetMenu(fileName = "SfxManager-X", menuName = "ECX Utilities/SfxManager", order = 1)] 
+    [CreateAssetMenu(fileName = "SfxManager", menuName = "ECX Utilities/SfxManager", order = 1)] 
     public class SfxManager : ScriptableObject {
-        [Header("Win/Loss Stingers")]
-        public AudioClip victoryStinger;
-        public AudioClip defeatStinger;
-
-        // [Header("Custom SFX")]   // UNCOMMENT THIS HEADER, RENAME IT, AND ADD ANY ADDITIONAL AUDIO CLIPS BELOW. THEN DRAG/DROP THEM IN THE UNITY EDITOR.
+        [Header("Sound FX")]  // Change as needed
+        public AudioClip sfx01;
 
 
         // METHODS:

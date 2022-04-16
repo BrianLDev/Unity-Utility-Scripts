@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 83306771264031733}
   - component: {fileID: 83306771264031738}
   m_Layer: 0
-  m_Name: UIAS
+  m_Name: UIAudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 83306771510634135}
   - component: {fileID: 83306771510634132}
   m_Layer: 0
-  m_Name: MusicAS
+  m_Name: MusicAudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 83306771753685335}
   - component: {fileID: 83306771753685332}
   m_Layer: 0
-  m_Name: SfxAS
+  m_Name: SfxAudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

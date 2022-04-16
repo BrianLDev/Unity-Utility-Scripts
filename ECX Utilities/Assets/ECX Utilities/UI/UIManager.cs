@@ -98,16 +98,16 @@ public class UIManager : SingletonMono2<UIManager> {
         public static void PlayMouseOver() {
             float pitchRangeUI = AudioManager.PitchRangeUI;
             float pitch = Random.Range(1-pitchRangeUI/2, 1+pitchRangeUI/2);
-            AudioManager.Instance.PlayClipControllable(AudioManager.Instance.UISfxManager.mouseOver, AudioCategory.UI, 1, pitch);
+            AudioManager.Instance.PlayClip(AudioManager.Instance.UISfxManager.mouseOver, AudioCategory.UI, 1, pitch);
         }
         public static void PlayButtonClick() {
             float pitchRangeUI = AudioManager.PitchRangeUI;
             float pitch = Random.Range(1-pitchRangeUI/2, 1+pitchRangeUI/2);
-            AudioManager.Instance.PlayClipControllable(AudioManager.Instance.UISfxManager.buttonClick, AudioCategory.UI, 1, pitch);
+            AudioManager.Instance.PlayClip(AudioManager.Instance.UISfxManager.buttonClick, AudioCategory.UI, 1, pitch);
         }
         public static void PlayErrorSound() {
             float pitchRangeUI = AudioManager.PitchRangeUI;
             float pitch = Random.Range(1-pitchRangeUI/2, 1+pitchRangeUI/2);
-            AudioManager.Instance.PlayClipControllable(AudioManager.Instance.UISfxManager.errorSound, AudioCategory.UI, 1, pitch);
+            AudioManager.Instance.PlayClip(AudioManager.Instance.UISfxManager.errorSound, AudioCategory.UI, 1, pitch);
         }
 }

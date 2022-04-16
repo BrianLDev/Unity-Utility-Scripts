@@ -1,8 +1,10 @@
 ﻿/*
 ECX UTILITY SCRIPTS
 Audio Manager (Singleton)
-Last updated: June 18, 2021
+Last updated: Apr 16, 2022
 */
+
+// TODO: UTILIZE UNITY'S AUDIOMIXERS
 
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +17,7 @@ namespace EcxUtilities {
 
     public class AudioManager : SingletonMono<AudioManager> {
 
+        [SerializeField] public bool playMusicOnStart = true;
         [SerializeField][Range(0, 3)] private static float pitchRangeUI = 0.1f;
         public static float PitchRangeUI => pitchRangeUI;
         [SerializeField] private MusicManager musicManager;
@@ -31,6 +34,7 @@ namespace EcxUtilities {
         public AudioSource AudioSourceUI => audioSourceUI;
         [SerializeField] private AudioSourcePool audioSourceSfxPool;
         public AudioSourcePool AudioSourcePool => AudioSourcePool;
+
 
         private bool isMusicPaused = false;
         // TODO: CREATE "LISTENERS" THAT RECALC MUSIC VOLUME WHEN THE SLIDERS BELOW ARE CHANGED IN THE UNITY EDITOR
@@ -56,13 +60,13 @@ namespace EcxUtilities {
                 Destroy(audioManagers[i].gameObject);
             }
             if (!musicManager)
-                Debug.LogError("Error: Missing Music Manager");
+                Debug.LogError("Error: AudioManager is missing Music Manager");
             if (!sfxManager)
-                Debug.LogError("Error: Missing SFX Manager");
+                Debug.LogError("Error: AudioManager is missing SFX Manager");
             if (!uISfxManager)
-                Debug.LogError("Error: Missing UI SFX Manager");
+                Debug.LogError("Error: AudioManager is missing UI SFX Manager");
             if (!audioSourceSfxPool)
-                Debug.LogError("Error: Missing Audio Source SFX Pool");
+                Debug.LogError("Error: AudioManager is missing Audio Source SFX Pool");
             // subscribe to OnSceneLoaded event to play music for that scene
             SceneManager.sceneLoaded += OnSceneLoaded;  
         }
@@ -93,7 +97,7 @@ namespace EcxUtilities {
                     PlayClipNewAudioSource(audioClip, ac, AudioManager.Instance.transform, Vector3.zero, volume, pitch);
             } 
             else {
-                Debug.LogError("Missing audioclip: " + audioClip);
+                Debug.LogError("AudioManager.PlayClip() call received a bad or missing audioclip: " + audioClip);
             }
         }
 
@@ -117,7 +121,7 @@ namespace EcxUtilities {
                     PlayClipNewAudioSource(audioClip, ac, AudioManager.Instance.transform, Vector3.zero, volume, pitch);
             } 
             else {
-                Debug.LogError("Missing audioclip: " + audioClip);
+                Debug.LogError("AudioManager.PlayClip() call received a bad or missing audioclip: " + audioClip);
             }
         }
 
@@ -149,7 +153,7 @@ namespace EcxUtilities {
                     return audioSourceTemp;       
                 }
             } else {
-                Debug.LogError("Missing audioclip: " + audioClip);
+                Debug.LogError("AudioManager.PlayClipControllable() call received a bad or missing audioclip: " + audioClip);
                 return null;
             }
         }
@@ -183,7 +187,7 @@ namespace EcxUtilities {
                     return audioSourceTemp;           
                 }
             } else {
-                Debug.LogError("Missing audioclip: " + audioClip);
+                Debug.LogError("AudioManager.PlayClipControllable() call received a bad or missing audioclip: " + audioClip);
                 return null;
             }
         }
@@ -203,7 +207,7 @@ namespace EcxUtilities {
                 return audioSourceTemp;
             }
             else {
-                Debug.LogError("Missing audioclip: " + audioClip);
+                Debug.LogError("AudioManager.PlayClipNewAudioSource() call received a bad or missing audioclip: " + audioClip);
                 return null;
             }
         }
@@ -222,7 +226,7 @@ namespace EcxUtilities {
                 int clipIndex = Random.Range(0,clips.Length);
                 PlayClip(clips[clipIndex], ac, volume, pitch);
             } else {
-                Debug.Log("Can't play: clips array is empty. Skipping.");  
+                Debug.Log("AudioManager.PlayRandomClip() can't play: clips array is empty. Skipping.");  
                 return; 
             }
         }
@@ -241,7 +245,7 @@ namespace EcxUtilities {
                 int clipIndex = Random.Range(0,clips.Count);
                 PlayClip(clips[clipIndex], ac, volume, pitch);
             } else {
-                Debug.LogError("Can't play: clips array is empty. Skipping.");  
+                Debug.LogError("AudioManager.PlayRandomClip() can't play: clips array is empty. Skipping.");  
                 return; 
             }
         }
@@ -251,21 +255,21 @@ namespace EcxUtilities {
         /// Loads a music track to the music AudioSource and plays it. (delay, volume, and pitch are optional)
         /// </summary>
         /// <param name="music"></param>
-        /// <param name="delay"></param>
         /// <param name="volume"></param>
         /// <param name="pitch"></param>
-        public void PlayMusic(AudioClip music, float delay=0, float volume=1, float pitch=1) {
+        /// <param name="delay"></param>
+        public void PlayMusic(AudioClip music, bool loop=true, float volume=1, float pitch=1, float delay=0) {
             if(music!=null) {
                 volume = CalcAdjustedVolume(AudioCategory.Music, volume);
                 audioSourceMusic.clip = music;
-                audioSourceMusic.loop = true;
+                audioSourceMusic.loop = loop;
                 if (delay>0)
                     audioSourceMusic.PlayDelayed(delay);
                 else
                     audioSourceMusic.Play();
             }
             else {
-                Debug.LogError("Missing music: " + music.name);
+                Debug.LogError("AudioManager.PlayMusic received bad or missing music: " + music.name);
             }
         }
 
@@ -326,11 +330,11 @@ namespace EcxUtilities {
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
             if (scene.buildIndex == 0)      // Main Menu
-                AudioManager.Instance.PlayMusic(musicManager.mainMenuMusic, 0.2f);
+                AudioManager.Instance.PlayMusic(MusicManager.mainMenuMusic, true, 0.2f);
             else if (scene.buildIndex == 1) // Game
-                AudioManager.Instance.PlayMusic(musicManager.gameMusic, 0.2f);
+                AudioManager.Instance.PlayMusic(MusicManager.gameMusic, true, 0.2f);
             else if (scene.buildIndex == 2) // Game Over
-                AudioManager.Instance.PlayMusic(musicManager.gameOverMusic, 0.2f);
+                AudioManager.Instance.PlayMusic(MusicManager.gameOverMusic, true, 0.2f);
         }
 
         private void OnDestroy() {

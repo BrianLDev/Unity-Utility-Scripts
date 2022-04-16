@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6ff59fbb2b7441bc9732677e1efc538, type: 3}
   m_Name: SfxManager
   m_EditorClassIdentifier: 
-  victoryStinger: {fileID: 0}
-  defeatStinger: {fileID: 0}
+  sfx01: {fileID: 8300000, guid: cf5f11b3ae51449fdbad5648e69a69c9, type: 3}
