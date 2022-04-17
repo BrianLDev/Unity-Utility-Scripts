@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using EcxUtilities;
 
-public class UIManager : SingletonMono2<UIManager> {
+public class UIManager : Singleton<UIManager> {
     [SerializeField] private Canvas mainMenuCanvas;
     [SerializeField] private Canvas gameHudCanvas;
     [SerializeField] private Canvas optionsMenuCanvas;

@@ -473,6 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a712773955a3146a7ac45f2c9ed85ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playMusicOnStart: 0
   musicManager: {fileID: 11400000, guid: b4729565908f04dc0947b818ec589080, type: 2}
   sfxManager: {fileID: 11400000, guid: 2f319ddd02c4b468ba3f48c38cb20242, type: 2}
   uISfxManager: {fileID: 11400000, guid: fa6f139c11c34457baa48ce67bf547e5, type: 2}

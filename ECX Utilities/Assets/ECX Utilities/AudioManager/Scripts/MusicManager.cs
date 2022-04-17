@@ -42,7 +42,7 @@ namespace EcxUtilities {
 
         // TODO: FIGURE OUT A BETTER WAY TO CONNECT MUSIC WITH RELATED SCENE.  BUILD INDEXES COULD CHANGE.
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-          if (AudioManager.Instance.playMusicOnStart) {
+          if (AudioManager.Instance.playMusicOnStart == true) {
             // UPDATE MUSIC AS NEEDED FOR VARIOUS SCENES AND BUILD INDEXES
             if (scene.buildIndex == 0)      // Main Menu
                 AudioManager.Instance.PlayMusic(mainMenuMusic, true, 0.2f);

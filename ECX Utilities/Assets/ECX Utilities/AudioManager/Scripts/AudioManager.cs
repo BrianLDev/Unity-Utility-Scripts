@@ -6,16 +6,14 @@ Last updated: Apr 16, 2022
 
 // TODO: UTILIZE UNITY'S AUDIOMIXERS
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.SceneManagement;
 
 namespace EcxUtilities {
     public enum AudioCategory { Music, Sfx, UI }
 
-    public class AudioManager : SingletonMono<AudioManager> {
+    public class AudioManager : Singleton<AudioManager> {
 
         [SerializeField] public bool playMusicOnStart = true;
         [SerializeField][Range(0, 3)] private static float pitchRangeUI = 0.1f;

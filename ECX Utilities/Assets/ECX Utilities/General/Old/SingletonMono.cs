@@ -1,6 +1,6 @@
 ﻿/*
 ECX UTILITY SCRIPTS
-Singleton MonoBehaviour
+Singleton MonoBehaviour (OLD VERSION)
 Last updated: June 18, 2021
 */
 
