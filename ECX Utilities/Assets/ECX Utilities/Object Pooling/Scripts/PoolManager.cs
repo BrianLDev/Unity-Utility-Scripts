@@ -3,104 +3,96 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace EcxUtilities {
-  
-  public class PoolManager : Singleton<PoolManager> {
-    public bool verboseLog;
-    public Transform parentContainerTfm;  // holds all the pooled items to keep hierarchy organized.  Use an empty GO at pos (0,0,0)
 
-    private Dictionary<GameObject, ObjectPool<GameObject>> prefabLookup;
-    private Dictionary<GameObject, ObjectPool<GameObject>> instanceLookup; 
-    
-    private bool dirty = false;
-    
-    void Awake () {
-      prefabLookup = new Dictionary<GameObject, ObjectPool<GameObject>>();
-      instanceLookup = new Dictionary<GameObject, ObjectPool<GameObject>>();
-    }
+	public class PoolManager : Singleton<PoolManager> {
+		public bool verboseLog;
+		public Transform parentContainerTfm;  // Holds all the pooled items to keep hierarchy organized.  Use an empty GO at pos (0,0,0)
 
-    void Update() {
-      if(verboseLog && dirty) {
-        LogStatus();
-        dirty = false;
-      }
-    }
+		private Dictionary<GameObject, ObjectPool<GameObject>> prefabLookup;
+		private Dictionary<GameObject, ObjectPool<GameObject>> instanceLookup;
 
-    public void warmPool(GameObject prefab, int size) {
-      if(prefabLookup.ContainsKey(prefab)) {
-        throw new Exception("Pool for prefab " + prefab.name + " has already been created");
-      }
-      var pool = new ObjectPool<GameObject>(() => { return InstantiatePrefab(prefab); }, size);
-      prefabLookup[prefab] = pool;
+		private bool dirty = false;
 
-      dirty = true;
-    }
+		void Awake() {
+			prefabLookup = new Dictionary<GameObject, ObjectPool<GameObject>>();
+			instanceLookup = new Dictionary<GameObject, ObjectPool<GameObject>>();
+		}
 
-    public GameObject spawnObject(GameObject prefab) {
-      return spawnObject(prefab, Vector3.zero, Quaternion.identity);
-    }
+		void Update() {
+			if (verboseLog && dirty) {
+				LogStatus();
+				dirty = false;
+			}
+		}
 
-    public GameObject spawnObject(GameObject prefab, Vector3 position, Quaternion rotation) {
-      if (!prefabLookup.ContainsKey(prefab)) {
-        CreatePool(prefab, 1);
-      }
+		public void warmPool(GameObject prefab, int size) {
+			if (prefabLookup.ContainsKey(prefab))
+				throw new Exception("Pool for prefab " + prefab.name + " has already been created");
+			var pool = new ObjectPool<GameObject>(() => { return InstantiatePrefab(prefab); }, size);
+			prefabLookup[prefab] = pool;
 
-      var pool = prefabLookup[prefab];
+			dirty = true;
+		}
 
-      var clone = pool.GetItem();
-      clone.transform.SetPositionAndRotation(position, rotation);
-      clone.SetActive(true);
+		public GameObject spawnObject(GameObject prefab) =>
+			spawnObject(prefab, Vector3.zero, Quaternion.identity);
 
-      instanceLookup.Add(clone, pool);
-      dirty = true;
-      return clone;
-    }
+		public GameObject spawnObject(GameObject prefab, Vector3 position, Quaternion rotation) {
+			if (!prefabLookup.ContainsKey(prefab))
+				CreatePool(prefab, 1);
 
-    public void releaseObject(GameObject clone) {
-      clone.SetActive(false);
+			var pool = prefabLookup[prefab];
 
-      if(instanceLookup.ContainsKey(clone)) {
-        instanceLookup[clone].ReleaseItem(clone);
-        instanceLookup.Remove(clone);
-        dirty = true;
-      }
-      else {
-        Debug.LogWarning("No pool contains the object: " + clone.name);
-      }
-    }
+			var clone = pool.GetItem();
+			clone.transform.SetPositionAndRotation(position, rotation);
+			clone.SetActive(true);
+
+			instanceLookup.Add(clone, pool);
+			dirty = true;
+			return clone;
+		}
+
+		public void releaseObject(GameObject clone) {
+			clone.SetActive(false);
+
+			if (instanceLookup.ContainsKey(clone)) {
+				instanceLookup[clone].ReleaseItem(clone);
+				instanceLookup.Remove(clone);
+				dirty = true;
+			}
+			else
+				Debug.LogWarning("No pool contains the object: " + clone.name);
+		}
 
 
-    private GameObject InstantiatePrefab(GameObject prefab) {
-      var go = Instantiate(prefab) as GameObject;
-      if (parentContainerTfm != null) go.transform.parent = parentContainerTfm;
-      return go;
-    }
+		private GameObject InstantiatePrefab(GameObject prefab) {
+			var go = Instantiate(prefab) as GameObject;
+			if (parentContainerTfm != null) go.transform.parent = parentContainerTfm;
+			return go;
+		}
 
-    public void LogStatus()  {
-      foreach (KeyValuePair<GameObject, ObjectPool<GameObject>> keyVal in prefabLookup) {
-        Debug.Log(string.Format("Object Pool for Prefab: {0} In Use: {1} Total {2}", keyVal.Key.name, keyVal.Value.CountUsedItems, keyVal.Value.Count));
-      }
-    }
+		public void LogStatus() {
+			foreach (KeyValuePair<GameObject, ObjectPool<GameObject>> keyVal in prefabLookup) {
+				Debug.Log(string.Format("Object Pool for Prefab: {0} In Use: {1} Total {2}", keyVal.Key.name, keyVal.Value.CountUsedItems, keyVal.Value.Count));
+			}
+		}
 
-    #region Static API
+		#region Static API
 
-    public static void CreatePool(GameObject prefab, int size) {
-      Instance.warmPool(prefab, size);
-    }
+		public static void CreatePool(GameObject prefab, int size) =>
+			Instance.warmPool(prefab, size);
 
-    public static GameObject SpawnObject(GameObject prefab) {
-      return Instance.spawnObject(prefab);
-    }
+		public static GameObject SpawnObject(GameObject prefab) =>
+			Instance.spawnObject(prefab);
 
-    public static GameObject SpawnObject(GameObject prefab, Vector3 position, Quaternion rotation) {
-      return Instance.spawnObject(prefab, position, rotation);
-    }
+		public static GameObject SpawnObject(GameObject prefab, Vector3 position, Quaternion rotation) =>
+			Instance.spawnObject(prefab, position, rotation);
 
-    public static void ReleaseObject(GameObject clone) {
-      Instance.releaseObject(clone);
-    }
+		public static void ReleaseObject(GameObject clone) =>
+			Instance.releaseObject(clone);
 
-    #endregion
-  }
+		#endregion
+	}
 
 
 }

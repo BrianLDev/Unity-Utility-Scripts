@@ -6,19 +6,17 @@ public class Bullet : MonoBehaviour {
 
 	void OnEnable() {
 		speed = 0f;
-    accel = 0.2f;
-
+		accel = 0.2f;
 	}
 
-  private void FixedUpdate() {
-    speed += accel;
-    transform.position += Vector3.up * speed * Time.fixedDeltaTime;
+	private void FixedUpdate() {
+		speed += accel;
+		transform.position += Vector3.up * speed * Time.fixedDeltaTime;
 
-		if(transform.position.y > 10)
+		if (transform.position.y > 10)
 			Release();
-  }
-
-	void Release() {
-		PoolManager.ReleaseObject(this.gameObject);
 	}
+
+	void Release() =>
+		PoolManager.ReleaseObject(this.gameObject);
 }

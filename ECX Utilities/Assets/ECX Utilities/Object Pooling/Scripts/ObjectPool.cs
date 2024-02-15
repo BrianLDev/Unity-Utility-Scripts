@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EcxUtilities
-{
+namespace EcxUtilities {
+
 	public class ObjectPool<T> {
 		private List<ObjectPoolContainer<T>> list;
 		private Dictionary<T, ObjectPoolContainer<T>> lookup;
@@ -36,20 +36,18 @@ namespace EcxUtilities
 			ObjectPoolContainer<T> container = null;
 			for (int i = 0; i < list.Count; i++) {
 				lastIndex++;
-				if (lastIndex > list.Count - 1) lastIndex = 0;
-				
-				if (list[lastIndex].Used) {
+				if (lastIndex > list.Count - 1)
+					lastIndex = 0;
+				if (list[lastIndex].Used)
 					continue;
-				}
 				else {
 					container = list[lastIndex];
 					break;
 				}
 			}
 
-			if (container == null) {
+			if (container == null)
 				container = CreateContainer();
-			}
 
 			container.Consume();
 			lookup.Add(container.Item, container);
@@ -66,9 +64,8 @@ namespace EcxUtilities
 				container.Release();
 				lookup.Remove(item);
 			}
-			else {
+			else
 				Debug.LogWarning("This object pool does not contain the item provided: " + item);
-			}
 		}
 
 		public int Count {
