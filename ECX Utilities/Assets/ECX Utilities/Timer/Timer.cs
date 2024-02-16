@@ -1,7 +1,7 @@
 /*
 ECX UTILITY SCRIPTS
 Timer
-Last updated: Feb 15, 2024
+Last updated: Feb 16, 2024
 */
 
 using System;
@@ -21,7 +21,7 @@ namespace EcxUtilities {
 		public float fractionRemaining => remaining / duration;
 		public float fractionElapsed => elapsed / duration;
 
-		public Timer(float duration, Action onComplete, Action<float> onUpdate = null, bool isRepeating = false, bool isPersistent = false) {
+		private Timer(float duration, Action onComplete, Action<float> onUpdate = null, bool isRepeating = false, bool isPersistent = false) {
 			this.duration = duration;
 			this.onComplete = onComplete;
 			this.onUpdate = onUpdate;
@@ -31,8 +31,17 @@ namespace EcxUtilities {
 			isComplete = false;
 			remaining = duration;
 			TimerManager.Instance.AddTimer(this);
+			Start();
 		}
 
+		~Timer() =>
+			Dispose();
+
+		public static Timer CreateOneShot(float duration, Action onComplete, Action<float> onUpdate = null) =>
+			new Timer(duration, onComplete, onUpdate, false, false);
+
+		public static Timer CreatePersistent(float duration, Action onComplete, Action<float> onUpdate = null, bool isRepeating = false) =>
+			new Timer(duration, onComplete, onUpdate, isRepeating, true);
 
 		public void Start() =>
 			Restart();
@@ -55,7 +64,6 @@ namespace EcxUtilities {
 			if (!isComplete && !isPaused) {
 				remaining -= deltaTime;
 				onUpdate?.Invoke(deltaTime);
-				// Debug.Log($"Timer just ticked for {deltaTime} ms.  {remaining} remaining");
 			}
 			
 			if (!isComplete && remaining <= 0) {
@@ -67,14 +75,15 @@ namespace EcxUtilities {
 					isComplete = false;
 				}
 				else if (!isPersistent)
-					Destroy();
+					Dispose();
 			}
 		}
 
-		public void Destroy() {
-			TimerManager.Instance.RemoveTimer(this);
+		public void Dispose() {
 			onComplete = null;
 			onUpdate = null;
+			if (TimerManager.Instance != null)
+				TimerManager.Instance?.RemoveTimer(this);
 		}
 	}
 

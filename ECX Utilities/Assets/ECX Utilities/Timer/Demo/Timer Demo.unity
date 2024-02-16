@@ -330,6 +330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9bc0b0f9ef474029a14b401d5d1d7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spamTimers: 5000
 --- !u!4 &1737903683
 Transform:
   m_ObjectHideFlags: 0
