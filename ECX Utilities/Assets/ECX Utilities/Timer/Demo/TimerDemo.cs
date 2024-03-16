@@ -1,7 +1,8 @@
 using UnityEngine;
 using EcxUtilities;
 
-public class TimerTest : MonoBehaviour {
+// TODO: ADD MORE FUN STUFF TO TIMER DEMO INCLUDING BUTTONS, 3 SECOND COUNTDOWN TIMER, ETC
+public class TimerDemo : MonoBehaviour {
 	[SerializeField] private int spamTimers;
 	private Timer oneTime, repeating, destructable1, destructable2;
 	private int oneShotCount, repeatingCount, destructable2Count, spamCount;
@@ -16,14 +17,14 @@ public class TimerTest : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.O))
 			oneTime = Timer.CreatePersistent(3, OneShotDone);
 		if (Input.GetKeyDown(KeyCode.D))
-			destructable1 = Timer.CreateOneShot(1, Destructable1Done);
+			destructable1 = Timer.Create(1, Destructable1Done);
 		if (Input.GetKeyDown(KeyCode.F)) {
-			destructable2 = Timer.CreateOneShot(1, () => destructable2Count += 1);
+			destructable2 = Timer.Create(1, () => destructable2Count += 1);
 			destructable2.onComplete += Destructable2Done;
 		}
 		if (Input.GetKeyDown(KeyCode.S)) {
 			for (int i=0; i<spamTimers; i++)
-				Timer.CreateOneShot(2, () => spamCount += 1);
+				Timer.Create(2, () => spamCount += 1);
 		}
 		if (Input.GetKeyDown(KeyCode.C))
 			Debug.Log($"Current spamTimers count is {spamCount}");
