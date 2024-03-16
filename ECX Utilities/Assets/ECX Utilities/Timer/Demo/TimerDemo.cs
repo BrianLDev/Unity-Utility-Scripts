@@ -3,45 +3,53 @@ using EcxUtilities;
 
 // TODO: ADD MORE FUN STUFF TO TIMER DEMO INCLUDING BUTTONS, 3 SECOND COUNTDOWN TIMER, ETC
 public class TimerDemo : MonoBehaviour {
-	[SerializeField] private int spamTimers;
-	private Timer oneTime, repeating, destructable1, destructable2;
-	private int oneShotCount, repeatingCount, destructable2Count, spamCount;
+	Timer repeatingTimerCount, repeatingTimer;
+	private int completeCount;
+
 
 	private void Start() {
-		oneTime = Timer.CreatePersistent(3, OneShotDone);
-		repeating = Timer.CreatePersistent(2, () => repeatingCount += 1, null, true);
-		repeating.onComplete += RepeatingDone;
+		repeatingTimerCount = Timer.Create(5, PrintStats, null, true);
 	}
 
 	private void Update() {
-		if (Input.GetKeyDown(KeyCode.O))
-			oneTime = Timer.CreatePersistent(3, OneShotDone);
-		if (Input.GetKeyDown(KeyCode.D))
-			destructable1 = Timer.Create(1, Destructable1Done);
-		if (Input.GetKeyDown(KeyCode.F)) {
-			destructable2 = Timer.Create(1, () => destructable2Count += 1);
-			destructable2.onComplete += Destructable2Done;
+		if (Input.GetKeyDown(KeyCode.O)) {
+			Timer.Create(3, OneShotDone);
+			Debug.Log("One shot timer created (3 sec)");
 		}
-		if (Input.GetKeyDown(KeyCode.S)) {
-			for (int i=0; i<spamTimers; i++)
-				Timer.Create(2, () => spamCount += 1);
+
+		if (Input.GetKeyDown(KeyCode.R)) {
+			// Need to make sure repeating timer isn't already created or we will lose orig ref and it will repeat forever, creating memory leak.
+			if (repeatingTimer == null)
+				repeatingTimer = Timer.Create(2, RepeatingDone, null, true);
+			else
+				repeatingTimer.Restart();
+			Debug.Log("Repeating timer created (2 sec)");
 		}
-		if (Input.GetKeyDown(KeyCode.C))
-			Debug.Log($"Current spamTimers count is {spamCount}");
+
+		if (Input.GetKeyDown(KeyCode.D)) {
+			repeatingTimer.Dispose();
+			Debug.Log("Repeating timer was disposed.");
+		}
+
+		if (Input.GetKeyDown(KeyCode.L)) {
+			Timer.Create(0.5f, () => completeCount++);
+			Debug.Log("Timer with lambda increment function created (0.5 sec)");
+		}
+
+		if (Input.GetKeyDown(KeyCode.S))
+			PrintStats();
 	}
 
 	private void OneShotDone() {
-		oneShotCount += 1;
-		Debug.Log($"OneShot Timer is done!  Current count is {oneShotCount}");
+		completeCount += 1;
+		Debug.Log($"OneShot Timer is done!  Total completed: {completeCount}");
 	}
 
-	private void RepeatingDone() =>
-		Debug.Log($"Repeating Timer is done!  Current count is {repeatingCount}");
-
-	private void Destructable1Done() =>
-		Debug.Log($"Destructable Timer 1 is done!");
-
-	private void Destructable2Done() =>
-		Debug.Log($"Destructable Timer 2 is done!  Current count is {destructable2Count}");
+	private void RepeatingDone() {
+		completeCount += 1;
+		Debug.Log($"Repeating Timer is done!  Total completed: {completeCount}");
+	}
 	
+	private void PrintStats() =>
+		Debug.Log($"** Current timer count is: {TimerManager.Instance.timerCount}.  Completion count is: {completeCount}");
 }
