@@ -63,3 +63,5 @@ crashlytics-build.properties
 
 # WAKATIME PACKAGE LINK:
 # https://github.com/vladfaust/unity-wakatime.git#package
+
+# Ignore package exports from git repo
