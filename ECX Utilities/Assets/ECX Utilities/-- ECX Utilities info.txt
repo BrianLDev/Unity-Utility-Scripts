@@ -1,5 +1,5 @@
 ECX UTILITY SCRIPTS
-Last updated: Dec 26, 2023
+Last updated: Jun 16, 2025
 
 A variety of Unity utility scripts that I've created over time.  Useful for almost any project to save time and focus on more important stuff.
 
